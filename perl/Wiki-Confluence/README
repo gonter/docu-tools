@@ -1,7 +1,30 @@
 Wiki-Confluence
 
-This is an experimental module to process the XML dump of
-Atlassian/Confluence Wiki.
+This is an experimental module to process the XML dump of an
+Atlassian/Confluence Wiki space.
+
+The dump contains a sequence of <object> elements which represent the
+components of the Wiki content.  Most important pars are
+
+  <object class=Page>
+  <object class=BodyContent>
+
+which represent individual pages and the actual content of the page.
+
+STATUS AND GOALS
+
+Right now, the script cfl1.pl only separates each object into a temprary
+file tree under ./tmp/<object-class>/<object-id> while also creating a
+datastructre which resembles a "Page Tree".  This page tree contains
+information about the wiki space.  The page tree should be used in a
+second pass to transcribe the content in a format for offline usage,
+e.g. EPUB.  Gollum also seem to be a viable option.  Since the XML
+dump contains the page history as well, importing the pages into a
+version control system (e.g. git for use with Gollum) seems to be
+possible.  Right now I'm exploring ways to synchronzie the contents
+bidirectionally...
+
+... to be continued ...
 
 INSTALLATION
 
