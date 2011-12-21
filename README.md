@@ -5,4 +5,5 @@ repository structure
 ====================
 
 * perl/wiki-confluence/  process Atlassian/Confluence Wiki XML dumps.
+* perl/ebook-calibre/ (coming soon)
 
