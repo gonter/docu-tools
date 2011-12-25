@@ -492,8 +492,15 @@ sub hdl_object
     elsif ($x_orig && !$x_hist)
     {
       $status= 'old';
-      $pt_obj= $self->get_page ($x_orig);
-      $pt_obj->{'x_hist'}->{$d_id};
+
+      ## Don't know, why we should record the page id of an historical
+      ## version into the original version again, maybe just to check,
+      ## if the collection "historicalVersion" was complete.  Let's
+      ## keep it commented for now.
+
+      # $pt_obj= $self->get_page ($x_orig);
+      # $pt_obj->{'x_hist'}->{$d_id}++;
+      # push (@{$pt_obj->{'x_hist'}}, $d_id);
     }
     else
     {
