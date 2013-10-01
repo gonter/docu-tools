@@ -88,10 +88,11 @@ sub parse
   my $fnm= shift;
 
   my $note;
+
      if (ref ($c) eq 'Tomboy::Note::Simple') { $note= $c; }
   elsif (ref ($c) eq '')
   {
-    print "create new c=[$c]\n";
+    # print "create new c=[$c]\n";
     $note= new Tomboy::Note::Simple;
   }
   else
@@ -99,6 +100,7 @@ sub parse
     print "unknown c=[$c] r=[", ref ($c), "]\n";
   }
   # print "note=[$note]\n";
+
   $note->{'fnm'}= $fnm;
 
   my $p= new XML::Parser (Style => 'Tree');
@@ -170,4 +172,9 @@ __END__
 
   Gerhard Gonter <ggonter@gmail.com>
 
+=head1 BUGS
+
+* XML::Parser throws exceptions, these are currently not handled.
+
 =cut
+
