@@ -4,7 +4,7 @@
 
 =head1 NAME
 
-  Tomboy::Directory;
+  Tomboy::Directory
 
 =head1 SYNOPSIS
 
@@ -21,7 +21,7 @@ use strict;
 use Tomboy::Note::Simple;
 
 my @TB_note_attrs= qw(title create-date last-change-date last-metadata-change-date);
-my @TB_meta_attrs= qw(uid notebook);
+my @TB_meta_attrs= qw(uid mtime size notebook is_template);
 sub TB_attrs { return (@TB_meta_attrs, @TB_note_attrs) }
 
 sub new
@@ -61,6 +61,13 @@ sub scan_dir
 
     my $fp= join ('/', $dir, $e);
     # print "reading note [$fp]\n"; # TODO: if verbose...
+    my @st= stat ($fp);
+    unless (@st)
+    {
+      print "ATTN: can't stat '$fp'\n";
+      next NOTE;
+    }
+
     my $n= parse Tomboy::Note::Simple ($fp);
 
     unless (defined ($n))
@@ -71,10 +78,13 @@ sub scan_dir
 
     my %rec= map { $_ => $n->{$_} } @TB_note_attrs;
     $rec{'uid'}= $uid;
+    $rec{'mtime'}= $st[9];
+    $rec{'size'}= $st[7];
 
     foreach my $tag (@{$n->{'tags'}})
     {
       if ($tag =~ m#system:notebook:(.+)#) { $rec{'notebook'}= $1 }
+      elsif ($tag eq 'system:template') { $rec{'is_template'}= 1; }
     }
 
     push (@res, \%rec);
