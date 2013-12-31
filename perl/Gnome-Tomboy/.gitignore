@@ -1,1 +1,6 @@
 Tomboy-TOC.csv
+tmp
+*.note
+*.swp
+do_verify.sh
+typescript
