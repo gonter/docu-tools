@@ -89,7 +89,7 @@ sub new
   my $title= 'New Note ' . Tomboy::ts_ISO ();
   my $note=
   {
-    'lines' => [ $title ],
+    'lines' => [],
     'title' => $title,
   };
   foreach my $f (@fields_date)     { $note->{$f}= Tomboy::ts_ISO() }
