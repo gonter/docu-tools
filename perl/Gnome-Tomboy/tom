@@ -1,0 +1,148 @@
+#!/usr/bin/perl
+
+=head1 NAME
+
+  tom
+
+=head1 DESCRIPTION
+
+do stuff with Tomboy files
+
+=head1 USAGE
+
+  tom <op-code> @options @parameters
+
+=head1 OPTIONS
+
+  ...
+
+=head1 OP-CODES
+
+=head2 show
+
+=head2 diff
+
+=cut
+
+use strict;
+
+use Data::Dumper;
+$Data::Dumper::Indent= 1;
+
+use Util::Simple_CSV;
+
+use Tomboy::Note::Simple;
+use Tomboy::Directory;
+use Tomboy::TOC;
+
+my $toc_file;
+my $note_dir= $ENV{'HOME'} . '/.local/share/tomboy';
+
+my $start_tb= 0;
+my $toc;
+my $op_code;
+my @PAR;
+
+while (my $arg= shift (@ARGV))
+{
+  if ($arg =~ /^-/)
+  {
+       if ($arg eq '-d') { $note_dir= shift (@ARGV); }
+    elsif ($arg eq '-t') { $toc_file= shift (@ARGV); }
+    elsif ($arg eq '-e') { $start_tb= 1; }
+    else
+    {
+      usage();
+    }
+  }
+  else
+  {
+    push (@PAR, $arg);
+  }
+}
+
+my $op_code= shift (@PAR) unless (defined ($op_code));
+
+
+   if ($op_code eq 'help') { usage(); }
+elsif ($op_code eq 'dump') { dump_note ($_) foreach (@PAR); }
+elsif ($op_code eq 'toc')  { tom_toc(); }
+elsif ($op_code eq 'find') { find_note(@PAR); }
+elsif ($op_code eq 'diff')
+{
+  my $f1= shift (@PAR);
+  my $n1= parse Tomboy::Note::Simple ($f1);
+
+  foreach my $f2 (@PAR)
+  {
+    my $n2= parse Tomboy::Note::Simple ($f2);
+    diff_note ($n1, $n2);
+  }
+}
+else
+{
+  usage();
+}
+
+exit (0);
+
+sub usage
+{
+  system ('perldoc', $0);
+  exit;
+}
+
+sub setup_toc
+{
+  $toc_file= join ('/', $note_dir, 'Tomboy-TOC.csv') unless (defined ($toc_file));
+  $toc= new Tomboy::TOC('note_dir' => $note_dir, 'toc_file' => $toc_file);
+  # print "toc: ", Dumper ($toc);
+}
+
+sub tom_toc
+{
+  setup_toc();
+  $toc->scan_dir();
+}
+
+sub find_note
+{
+  setup_toc();
+
+  my %uuid;
+  foreach my $pattern (@_)
+  {
+    my @res= $toc->find ($pattern);
+    foreach my $res (@res) { $uuid{$res->{'uuid'}}= $res; } # TODO: count hits
+  }
+
+  foreach my $uuid (keys %uuid)
+  {
+    if ($start_tb)
+    {
+      Tomboy::start_tb ('uuid', $uuid);
+    }
+    else
+    {
+      print Dumper ($uuid{$uuid});
+    }
+  }
+}
+
+sub dump_note
+{
+  my $note_fnm= shift;
+
+  my $n1= parse Tomboy::Note::Simple ($note_fnm);
+  $n1->update();
+  print "n1: ", Dumper ($n1);
+}
+
+sub diff_note
+{
+  my $n1= shift;
+  my $n2= shift;
+  print "n1: ", Dumper ($n1);
+  print "n2: ", Dumper ($n2);
+}
+
