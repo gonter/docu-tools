@@ -11,8 +11,8 @@ utility functions to work with Tomboy
 
   use Tomboy;
 
-  $text2= $Tomboy::link($text);
-  $text2= $Tomboy::list_item($text);
+  $text2= Tomboy::link($text);
+  $text2= Tomboy::list_item($text);
 
 =head1 INTERNAL FUNCTIONS
 
@@ -23,6 +23,7 @@ package Tomboy;
 use strict;
 
 use UUID;
+use POSIX;
 
 sub link
 {
@@ -46,8 +47,9 @@ sub ts_ISO
 {
   my $time= shift || time ();
   my @ts= localtime ($time);
-  sprintf ("%04d-%02d-%02dT%02d:%02d:%02d.0000000+01:00",
-           $ts[5]+1900, $ts[4]+1, $ts[3], $ts[2], $ts[1], $ts[0]);
+# sprintf ("%04d-%02d-%02dT%02d:%02d:%02d.0000000+01:00",
+#          $ts[5]+1900, $ts[4]+1, $ts[3], $ts[2], $ts[1], $ts[0]);
+  strftime ('%FT%T.000000%z', @ts);
 }
 
 sub get_uuid
@@ -56,6 +58,22 @@ sub get_uuid
   UUID::generate ($uuid);
   UUID::unparse ($uuid, $uuid_str);
   $uuid_str;
+}
+
+sub start_tb
+{
+  my $what= shift;
+  my $par= shift;
+
+  if ($what eq 'uuid')
+  {
+    my @cmd= ('tomboy', '--open-note', 'note://tomboy/'. $par);
+    print ">>> ", join (' ', @cmd), "\n";
+
+    my $pid= fork();
+    if ($pid == 0) { exec @cmd; }
+    print "started pid=[$pid]\n";
+  }
 }
 
 1;
