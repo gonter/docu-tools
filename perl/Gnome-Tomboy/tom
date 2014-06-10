@@ -18,6 +18,10 @@ do stuff with Tomboy files
 
 =head1 OP-CODES
 
+=head2 toc
+
+Refresh table of contents file.
+
 =head2 show
 
 =head2 diff
@@ -63,10 +67,10 @@ while (my $arg= shift (@ARGV))
 
 my $op_code= shift (@PAR) unless (defined ($op_code));
 
-
    if ($op_code eq 'help') { usage(); }
 elsif ($op_code eq 'dump') { dump_note ($_) foreach (@PAR); }
 elsif ($op_code eq 'toc')  { tom_toc(); }
+elsif ($op_code eq 'csv')  { tom_csv(); }
 elsif ($op_code eq 'find') { find_note(@PAR); }
 elsif ($op_code eq 'diff')
 {
@@ -127,6 +131,14 @@ sub find_note
       print Dumper ($uuid{$uuid});
     }
   }
+}
+
+sub tom_csv
+{
+  setup_toc();
+
+  # TODO: show CSV file itself
+  system (qw(csv --TAB --UTF8), $toc_file);
 }
 
 sub dump_note
