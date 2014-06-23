@@ -14,13 +14,17 @@ do stuff with Tomboy files
 
 =head1 OPTIONS
 
-  ...
+  -e ... edit note (used with find)
 
 =head1 OP-CODES
 
 =head2 toc
 
 Refresh table of contents file.
+
+=head2 find <pattern>
+
+Find notes matching given pattern.  If option -e is given, open these notes.
 
 =head2 show
 
@@ -49,14 +53,28 @@ my @PAR;
 
 while (my $arg= shift (@ARGV))
 {
-  if ($arg =~ /^-/)
+  if ($arg eq '--')
   {
-       if ($arg eq '-d') { $note_dir= shift (@ARGV); }
-    elsif ($arg eq '-t') { $toc_file= shift (@ARGV); }
-    elsif ($arg eq '-e') { $start_tb= 1; }
-    else
+    push (@PAR, @ARGV);
+    @ARGV= ();
+  }
+  elsif ($arg =~ /^--(.+)/)
+  {
+    my ($op, $val)= split ('=', $1);
+    print "op=[$op] val=[$val]\n";
+  }
+  elsif ($arg =~ /^-(.+)/)
+  {
+    my @a= split ('', $1);
+    foreach my $a (@a)
     {
-      usage();
+         if ($a eq 'd') { $note_dir= shift (@ARGV); }
+      elsif ($a eq 't') { $toc_file= shift (@ARGV); }
+      elsif ($a eq 'e') { $start_tb= 1; }
+      else
+      {
+        usage();
+      }
     }
   }
   else
@@ -66,6 +84,7 @@ while (my $arg= shift (@ARGV))
 }
 
 my $op_code= shift (@PAR) unless (defined ($op_code));
+print "op_code=[$op_code] par=[", join (';', @PAR), "]\n";
 
    if ($op_code eq 'help') { usage(); }
 elsif ($op_code eq 'dump') { dump_note ($_) foreach (@PAR); }
