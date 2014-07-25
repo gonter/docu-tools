@@ -25,17 +25,26 @@ sub set
   foreach my $par (keys %par) { $self->{$par}= $par{$par}; }
 }
 
+=head2 $toc->find($pattern [, $where])
+
+Search TOC for matching $pattern in field specified by $where; if $where is not defined, 'title' is used.
+
+Returns a list of matching TOC entries
+
+=cut
+
 sub find
 {
   my $self= shift;
   my $pattern= shift;
+  my $where= shift || 'title';
 
-print "find: pattern=[$pattern]\n";
+print "find: where=[$where] pattern=[$pattern]\n";
   my ($mode, $toc, $rows)= $self->load_toc();
   my @res;
   foreach my $row (@$rows)
   {
-    next unless ($row->{'title'} =~ m#$pattern#i);
+    next unless ($row->{$where} =~ m#$pattern#i);
     # print "row: ", main::Dumper ($row);
     push (@res, $row);
   }

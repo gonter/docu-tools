@@ -88,9 +88,10 @@ print "op_code=[$op_code] par=[", join (';', @PAR), "]\n";
 
    if ($op_code eq 'help') { usage(); }
 elsif ($op_code eq 'dump') { dump_note ($_) foreach (@PAR); }
+elsif ($op_code eq 'show') { find_note ('uuid', $_) foreach (@PAR); }
 elsif ($op_code eq 'toc')  { tom_toc(); }
 elsif ($op_code eq 'csv')  { tom_csv(); }
-elsif ($op_code eq 'find') { find_note(@PAR); }
+elsif ($op_code eq 'find') { find_note('title', @PAR); }
 elsif ($op_code eq 'diff')
 {
   my $f1= shift (@PAR);
@@ -130,12 +131,14 @@ sub tom_toc
 
 sub find_note
 {
+  my $where= shift;
+
   setup_toc();
 
   my %uuid;
   foreach my $pattern (@_)
   {
-    my @res= $toc->find ($pattern);
+    my @res= $toc->find ($pattern, $where);
     foreach my $res (@res) { $uuid{$res->{'uuid'}}= $res; } # TODO: count hits
   }
 
