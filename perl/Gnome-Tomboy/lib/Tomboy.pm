@@ -1,3 +1,4 @@
+#!/usr/bin/perl
 
 =head1 NAME
 
@@ -24,6 +25,8 @@ use strict;
 
 use UUID;
 use POSIX;
+
+my %options_passed= map { $_ => 1 } qw(--note-path); # used by start_tb() function
 
 sub link
 {
@@ -62,18 +65,29 @@ sub get_uuid
 
 sub start_tb
 {
-  my $what= shift;
-  my $par= shift;
+  my %par= @_;
 
-  if ($what eq 'uuid')
+  my @cmd= ('tomboy');
+  foreach my $what (keys %par)
   {
-    my @cmd= ('tomboy', '--open-note', 'note://tomboy/'. $par);
-    print ">>> ", join (' ', @cmd), "\n";
+    my $par= $par{$what};
 
-    my $pid= fork();
-    if ($pid == 0) { exec @cmd; }
-    print "started pid=[$pid]\n";
+    if ($what eq 'uuid')
+    {
+      push (@cmd, '--open-note', 'note://tomboy/'. $par);
+    }
+    elsif (exists ($options_passed{$what}))
+    {
+      push (@cmd, $what, $par);
+    }
   }
+
+  print ">>> ", join (' ', @cmd), "\n";
+  my $pid= fork();
+  if ($pid == 0) { exec @cmd; }
+  print "started pid=[$pid]\n";
+
+  $pid;
 }
 
 1;
