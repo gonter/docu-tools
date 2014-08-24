@@ -98,7 +98,7 @@ sub scan_dir
   }
 
   my @res= ();
-  my ($cnt_added, $cnt_updated, $cnt_unchanged)= (0, 0, 0);
+  my ($cnt_added, $cnt_updated, $cnt_unchanged, $cnt_dropped)= (0, 0, 0, 0);
   NOTE: while (my $e= readdir (DIR))
   {
     next NOTE if ($e eq '.' || $e eq '..');
@@ -117,6 +117,7 @@ sub scan_dir
     if ($quick)
     {
       my $x_rec= $fnm{$fp};
+      delete ($fnm{$fp});
 
       if (defined ($x_rec))
       {
@@ -165,9 +166,15 @@ sub scan_dir
   closedir (DIR);
 
 # TODO: list dropped files
+  foreach my $fp (keys %fnm)
+  {
+    print "dropped: ", $fp, "\n";
+    $cnt_dropped++;
+  }
+
 # TODO: save statistics and/or file status for later processing
 
-  print "statistics: cnt_added=$cnt_added cnt_updated=$cnt_updated cnt_unchanged=$cnt_unchanged\n";
+  print "statistics: cnt_added=$cnt_added cnt_updated=$cnt_updated cnt_dropped=$cnt_dropped cnt_unchanged=$cnt_unchanged\n";
   (wantarray) ? @res : \@res;
 }
 
