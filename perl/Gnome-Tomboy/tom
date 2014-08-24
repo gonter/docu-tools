@@ -14,6 +14,7 @@ do stuff with Tomboy files
 
 =head1 OPTIONS
 
+  -d <dir> ... full path of Tomboy notes directory
   -e ... edit note (used with find)
 
 =head1 OP-CODES
@@ -30,6 +31,10 @@ Find notes matching given pattern.  If option -e is given, open these notes.
 
 =head2 diff
 
+=head2 csv
+
+=head2 mergecheck
+
 =cut
 
 use strict;
@@ -45,11 +50,15 @@ use Tomboy::TOC;
 
 my $toc_file;
 my $note_dir= $ENV{'HOME'} . '/.local/share/tomboy';
+my $note_dir_changed= 0;
 
 my $start_tb= 0;
+my $dump_note= 0;
 my $toc;
 my $op_code;
 my @PAR;
+
+binmode (STDOUT, ':utf8');
 
 while (my $arg= shift (@ARGV))
 {
@@ -62,15 +71,17 @@ while (my $arg= shift (@ARGV))
   {
     my ($op, $val)= split ('=', $1);
     print "op=[$op] val=[$val]\n";
+    usage();
   }
   elsif ($arg =~ /^-(.+)/)
   {
     my @a= split ('', $1);
     foreach my $a (@a)
     {
-         if ($a eq 'd') { $note_dir= shift (@ARGV); }
+         if ($a eq 'd') { $note_dir= shift (@ARGV); $note_dir_changed= 1; }
       elsif ($a eq 't') { $toc_file= shift (@ARGV); }
       elsif ($a eq 'e') { $start_tb= 1; }
+      elsif ($a eq 'D') { $dump_note= 1; }
       else
       {
         usage();
@@ -102,6 +113,12 @@ elsif ($op_code eq 'diff')
     my $n2= parse Tomboy::Note::Simple ($f2);
     diff_note ($n1, $n2);
   }
+}
+elsif ($op_code eq 'mergecheck')
+{
+  my $merge_label= shift (@PAR);
+  my $merge_dir= shift (@PAR);
+  merge_check ($merge_label, $merge_dir);
 }
 else
 {
@@ -146,7 +163,13 @@ sub find_note
   {
     if ($start_tb)
     {
-      Tomboy::start_tb ('uuid', $uuid);
+      my @par= ('uuid' => $uuid);
+      push (@par, '--note-path', $note_dir) if ($note_dir_changed);
+      Tomboy::start_tb (@par);
+    }
+    elsif ($dump_note)
+    {
+      dump_note($uuid{$uuid}->{'fnm'});
     }
     else
     {
@@ -178,5 +201,89 @@ sub diff_note
   my $n2= shift;
   print "n1: ", Dumper ($n1);
   print "n2: ", Dumper ($n2);
+}
+
+sub merge_check
+{
+  my $merge_label= shift;
+  my $merge_dir= shift;
+
+  unless (defined ($merge_dir))
+  {
+    print "need merge directory\n";
+    usage();
+  }
+
+  setup_toc(); # prepare main TOC
+  $toc->scan_dir();
+
+  ## TODO: add option to specify toc file too unless ($merge_dir =~ /\.csv$);
+  my $m_toc_file= join ('/', $merge_dir, 'Tomboy-TOC.csv');
+  my $m_toc= new Tomboy::TOC('note_dir' => $merge_dir, 'toc_file' => $m_toc_file);
+  print "m_toc: ", Dumper ($m_toc);
+  $m_toc->scan_dir();
+  # print "m_toc: ", Dumper ($m_toc);
+
+  my $tbm= new tb_merge();
+
+  $tbm->toc_merge ('main', $toc);
+  $tbm->toc_merge ($merge_label, $m_toc);
+  $tbm->dups ('uuid');
+  $tbm->dups ('title');
+}
+
+# TODO: to be factored out into separate module ...
+package tb_merge;
+
+sub new
+{
+  bless {}, shift;
+}
+
+sub crf
+{
+  my $tbm= shift;
+  my $crf= shift;
+
+  my $x= $tbm->{$crf};
+  $x= $tbm->{$crf}= {} unless (defined ($x));
+  $x;
+}
+
+sub toc_merge
+{
+  my $tbm= shift;
+  my $label= shift;
+  my $toc= shift;
+
+  $tbm->{'tocs'}->{$label}= $toc;
+  my $x_uuid= $tbm->crf('uuid');
+  my $x_title= $tbm->crf('title');
+
+  my $csv= $toc->{'_toc'};
+  foreach my $row (@{$csv->{'data'}})
+  {
+    # print "row: ", main::Dumper($row);
+    my ($uuid, $title)= map { $row->{$_} } qw(uuid title);
+    # printf ("%s %s\n", $uuid, $title);
+    my $x= [ $label, $uuid, $title, $row ];
+    push (@{$x_uuid->{$uuid}}, $x);
+    push (@{$x_title->{$title}}, $x);
+  }
+}
+
+sub dups
+{
+  my $tbm= shift;
+  my $crf= shift;
+
+print "dup check by field=[$crf]\n";
+  my $xx= $tbm->crf($crf);
+  foreach my $idx (sort keys %$xx)
+  {
+    my $item= $xx->{$idx};
+    next if (@$item == 1); # only one item, not a dup...
+    print "item: ", main::Dumper($item);
+  }
 }
 
