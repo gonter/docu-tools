@@ -1,5 +1,13 @@
+h2. File Format considerations
+
 dead links are marked as
 
   <link:broken>text</link:broken>
 
+h2. Installation
 
+h3. Ubuntu prerequisites
+
+<pre>
+apt-get install libxml-parser-perl libjson-perl
+</pre>

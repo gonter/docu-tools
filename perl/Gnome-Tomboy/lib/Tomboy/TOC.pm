@@ -51,6 +51,7 @@ print "find: where=[$where] pattern=[$pattern]\n";
   @res;
 }
 
+# Note: there is also a Tomboy::Directoy::scan_dir()
 sub scan_dir
 {
   my $self= shift;

@@ -77,6 +77,8 @@ sub scan_dir
   my $quick= shift; # 0/undef: full scan
                     # 1: quick scan
 
+print __LINE__, " scan_dir: quick=[$quick]\n";
+
   $dir=~ s#/+$##;
   unless (opendir (DIR, $dir))
   {
@@ -90,7 +92,7 @@ sub scan_dir
     print "scan_dir: quick=[$quick]\n";
     # print "rows: ", Dumper ($rows);
     %fnm= map { $_->{'fnm'} => $_ } @$rows;
-    # print "fnm: ", Dumper (\%fnm);
+    # print __LINE__, " fnm: ", Dumper (\%fnm);
   }
   else
   {
@@ -117,6 +119,7 @@ sub scan_dir
     if ($quick)
     {
       my $x_rec= $fnm{$fp};
+      # print __LINE__, " fp=[$fp]\n";
       delete ($fnm{$fp});
 
       if (defined ($x_rec))
@@ -166,6 +169,7 @@ sub scan_dir
   closedir (DIR);
 
 # TODO: list dropped files
+  print __LINE__, " fnm: ", Dumper (\%fnm);
   foreach my $fp (keys %fnm)
   {
     print "dropped: ", $fp, "\n";

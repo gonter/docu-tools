@@ -14,6 +14,7 @@ do stuff with Tomboy files
 
 =head1 OPTIONS
 
+  --note-path <dir>
   -d <dir> ... full path of Tomboy notes directory
   -e ... edit note (used with find)
 
@@ -72,7 +73,12 @@ while (my $arg= shift (@ARGV))
   {
     my ($op, $val)= split ('=', $1);
     print "op=[$op] val=[$val]\n";
-    usage();
+
+    if ($op eq 'note-path') { $note_dir= $val || shift(@ARGV); $note_dir_changed= 1; }
+    else
+    {
+      usage();
+    }
   }
   elsif ($arg =~ /^-(.+)/)
   {
