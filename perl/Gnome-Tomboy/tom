@@ -53,6 +53,7 @@ my $note_dir= $ENV{'HOME'} . '/.local/share/tomboy';
 my $note_dir_changed= 0;
 
 my $start_tb= 0;
+my $start_visual_editor= 0; # AKA $EDITOR
 my $dump_note= 0;
 my $toc;
 my $op_code;
@@ -81,6 +82,7 @@ while (my $arg= shift (@ARGV))
          if ($a eq 'd') { $note_dir= shift (@ARGV); $note_dir_changed= 1; }
       elsif ($a eq 't') { $toc_file= shift (@ARGV); }
       elsif ($a eq 'e') { $start_tb= 1; }
+      elsif ($a eq 'v') { $start_visual_editor= 1; }
       elsif ($a eq 'D') { $dump_note= 1; }
       else
       {
@@ -166,6 +168,13 @@ sub find_note
       my @par= ('uuid' => $uuid);
       push (@par, '--note-path', $note_dir) if ($note_dir_changed);
       Tomboy::start_tb (@par);
+    }
+    elsif ($start_visual_editor)
+    {
+      my $fnm= join ('/', $note_dir, $uuid . '.note');
+      my $editor= $ENV{'EDITOR'} || '/usr/bin/vi';
+      print ">>> [", join (' ', $editor, $fnm), "]\n";
+      system ($editor, $fnm);
     }
     elsif ($dump_note)
     {
