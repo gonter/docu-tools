@@ -185,7 +185,7 @@ sub parse
      if (ref ($c) eq 'Tomboy::Note::Simple') { $note= $c; }
   elsif (ref ($c) eq '')
   {
-    # print "create new c=[$c]\n";
+    print "create new c=[$c] fnm=[$fnm]\n";
     $note= new Tomboy::Note::Simple;
   }
   else
@@ -203,6 +203,7 @@ sub parse
   if ($@)
   {
     print "parsefile failed fnm=[$fnm]:\n", $@, "\n";
+    print "caller: ", join (' ', caller()), "\n";
     return undef;
   }
 

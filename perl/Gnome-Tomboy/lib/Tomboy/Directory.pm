@@ -151,6 +151,7 @@ print __LINE__, " scan_dir: quick=[$quick]\n";
     unless (defined ($n))
     {
       print "ATTN: parsing [$fp] returned undefined note!\n";
+      print "caller: ", join (' ', caller()), "\n";
       next NOTE;
     }
     # print "n: ", main::Dumper ($n);
