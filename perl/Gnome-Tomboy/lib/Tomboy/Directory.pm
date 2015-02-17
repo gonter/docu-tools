@@ -99,6 +99,7 @@ print __LINE__, " scan_dir: quick=[$quick]\n";
     $quick= 0;
   }
 
+  my @broken= ();
   my @res= ();
   my ($cnt_added, $cnt_updated, $cnt_unchanged, $cnt_dropped)= (0, 0, 0, 0);
   NOTE: while (my $e= readdir (DIR))
@@ -152,8 +153,10 @@ print __LINE__, " scan_dir: quick=[$quick]\n";
     {
       print "ATTN: parsing [$fp] returned undefined note!\n";
       print "caller: ", join (' ', caller()), "\n";
+      push (@broken, $fp);
       next NOTE;
     }
+
     # print "n: ", main::Dumper ($n);
 
     my %rec= map { $_ => $n->{$_} } @TB_note_attrs;
@@ -179,7 +182,14 @@ print __LINE__, " scan_dir: quick=[$quick]\n";
 
 # TODO: save statistics and/or file status for later processing
 
-  print "statistics: cnt_added=$cnt_added cnt_updated=$cnt_updated cnt_dropped=$cnt_dropped cnt_unchanged=$cnt_unchanged\n";
+  my $cnt_broken= @broken;
+  print "statistics: cnt_added=$cnt_added cnt_updated=$cnt_updated cnt_dropped=$cnt_dropped cnt_unchanged=$cnt_unchanged cnt_broken=$cnt_broken\n";
+
+  if ($cnt_broken > 0)
+  {
+    print "\nbroken files:\n* ", join ("\n *", @broken), "\n";
+  }
+
   (wantarray) ? @res : \@res;
 }
 

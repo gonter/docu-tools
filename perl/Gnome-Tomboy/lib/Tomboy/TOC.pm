@@ -67,6 +67,7 @@ print main::Dumper ($self);
   my ($mode, $toc, $rows)= $self->load_toc();
 
   my $toc_data= $tb_d->scan_dir ($note_dir, $rows, $mode);
+  # print "toc_data=[$toc_data]\n";
   # TODO: if verbose or so print "toc_data: ", Dumper ($toc_data);
 
   $toc->{'data'}= $toc_data;
