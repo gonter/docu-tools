@@ -50,9 +50,21 @@ use Tomboy::Directory;
 use Tomboy::TOC;
 
 my $toc_file;
-my $note_dir= $ENV{'HOME'} . '/.local/share/tomboy';
-# TODO: does not work on cygwin!
+
 my $note_dir_changed= 0;
+my $note_dir;
+if ($ENV{'OSTYPE'} eq 'cygwin')
+{
+  my $p= `cygpath -O`;
+  chop ($p);
+  my @p= split('/', $p);
+  pop (@p);
+  $note_dir= join ('/', @p, qw(AppData Roaming Tomboy notes));
+}
+else
+{
+  $note_dir= $ENV{'HOME'} . '/.local/share/tomboy';
+}
 
 my $start_tb= 0;
 my $start_visual_editor= 0; # AKA $EDITOR
