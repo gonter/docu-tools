@@ -39,16 +39,21 @@ eval {
 
 if ($@)
 {
-  eval { require Data::UUID; };
+  print "no UUID\n";
+  eval {
+    use Data::UUID;
+
+    sub get_uuid2
+    {
+      my $uc= new Data::UUID;
+      my $str= $uc->create_str();
+      $str =~ tr/A-F/a-f/;
+      $str;
+    }
+    *get_uuid= *get_uuid2;
+  };
   if ($@) { die "install either UUID or Data::UUID"; }
 
-  sub get_uuid
-  {
-    my $uc= new Data::UUID;
-    my $str= $uc->create_str();
-    $str =~ tr/A-F/a-f/;
-    $str;
-  }
 }
 
 
