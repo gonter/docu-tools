@@ -4,12 +4,16 @@ use strict;
 
 use UUID;
 use Data::UUID;
+use POSIX;
 
-for (my $i= 0; $i< 10; $i++)
+my $max= shift (@ARGV) || 10;
+
+for (my $i= 0; $i< $max; $i++)
 {
   my $u1= get_uuid_1();
   my $u2= get_uuid_2();
-  printf ("%3d %s %s\n", $i, $u1, $u2);
+  my $ts= ts_iso();
+  printf ("%5d %s %s %s\n", $i, $ts, $u1, $u2);
 }
 
 sub get_uuid_1
@@ -38,3 +42,9 @@ sub get_uuid_2
   $str;
 }
 
+sub ts_iso
+{
+  my $ts_iso= strftime ('%FT%T.000000%z', localtime(time()));
+  # print "ts_iso=[$ts_iso]\n";
+  $ts_iso;
+}

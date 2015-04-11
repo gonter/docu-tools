@@ -23,7 +23,8 @@ package Tomboy;
 
 use strict;
 
-use UUID;
+# use UUID;
+use Data::UUID;
 use POSIX;
 
 my %options_passed= map { $_ => 1 } qw(--note-path); # used by start_tb() function
@@ -57,10 +58,21 @@ sub ts_ISO
 
 sub get_uuid
 {
+
+=begin comment
+
   my ($uuid, $uuid_str);
   UUID::generate ($uuid);
   UUID::unparse ($uuid, $uuid_str);
   $uuid_str;
+
+=end comment
+=cut
+
+  my $uc= new Data::UUID;
+  my $str= $uc->create_str();
+  $str =~ tr/A-F/a-f/;
+  $str;
 }
 
 sub start_tb
