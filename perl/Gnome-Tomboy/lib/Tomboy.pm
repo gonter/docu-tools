@@ -25,37 +25,42 @@ use strict;
 
 use POSIX;
 
-eval {
-  require UUID;
-
-  sub get_uuid
-  {
-    my ($uuid, $uuid_str);
-    UUID::generate ($uuid);
-    UUID::unparse ($uuid, $uuid_str);
-    $uuid_str;
-  }
-};
-
-if ($@)
+BEGIN
 {
-  print "no UUID\n";
-  eval {
-    use Data::UUID;
+  eval
+  {
+    require UUID;
 
-    sub get_uuid2
+    sub get_uuid
     {
-      my $uc= new Data::UUID;
-      my $str= $uc->create_str();
-      $str =~ tr/A-F/a-f/;
-      $str;
+      my ($uuid, $uuid_str);
+      UUID::generate ($uuid);
+      UUID::unparse ($uuid, $uuid_str);
+      $uuid_str;
     }
-    *get_uuid= *get_uuid2;
   };
-  if ($@) { die "install either UUID or Data::UUID"; }
 
+  if ($@)
+  {
+    eval
+    {
+      require Data::UUID;
+    };
+
+    if ($@) { die "install either UUID or Data::UUID"; }
+    else
+    {
+      sub get_uuid2
+      {
+        my $uc= new Data::UUID;
+        my $str= $uc->create_str();
+        $str =~ tr/A-F/a-f/;
+        $str;
+      }
+      *get_uuid= *get_uuid2;
+    }
+  }
 }
-
 
 my %options_passed= map { $_ => 1 } qw(--note-path); # used by start_tb() function
 
