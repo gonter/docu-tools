@@ -2,9 +2,31 @@
 
 use strict;
 
-use UUID;
-use Data::UUID;
 use POSIX;
+
+eval {
+  require UUID;
+
+  sub get_uuid_1
+  {
+    my ($uuid, $uuid_str);
+    UUID::generate ($uuid);
+    UUID::unparse ($uuid, $uuid_str);
+    $uuid_str;
+  }
+};
+
+if ($@)
+{
+  print "no UUID package\n";
+
+  require Data::UUID;
+  sub get_uuid_1
+  {
+    get_uuid_2();
+  }
+}
+
 
 my $max= shift (@ARGV) || 10;
 
@@ -16,13 +38,7 @@ for (my $i= 0; $i< $max; $i++)
   printf ("%5d %s %s %s\n", $i, $ts, $u1, $u2);
 }
 
-sub get_uuid_1
-{
-  my ($uuid, $uuid_str);
-  UUID::generate ($uuid);
-  UUID::unparse ($uuid, $uuid_str);
-  $uuid_str;
-}
+=begin junk
 
 sub get_uuid_2b
 {
@@ -33,6 +49,9 @@ sub get_uuid_2b
   $str =~ tr/A-F/a-f/;
   $str;
 }
+
+=end junk
+=cut
 
 sub get_uuid_2
 {
@@ -48,3 +67,4 @@ sub ts_iso
   # print "ts_iso=[$ts_iso]\n";
   $ts_iso;
 }
+

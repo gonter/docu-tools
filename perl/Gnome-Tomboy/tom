@@ -51,6 +51,7 @@ use Tomboy::TOC;
 
 my $toc_file;
 my $note_dir= $ENV{'HOME'} . '/.local/share/tomboy';
+# TODO: does not work on cygwin!
 my $note_dir_changed= 0;
 
 my $start_tb= 0;
@@ -71,7 +72,7 @@ while (my $arg= shift (@ARGV))
   }
   elsif ($arg =~ /^--(.+)/)
   {
-    my ($op, $val)= split ('=', $1);
+    my ($op, $val)= split ('=', $1, 2);
     print "op=[$op] val=[$val]\n";
 
     if ($op eq 'note-path') { $note_dir= $val || shift(@ARGV); $note_dir_changed= 1; }

@@ -23,9 +23,34 @@ package Tomboy;
 
 use strict;
 
-# use UUID;
-use Data::UUID;
 use POSIX;
+
+eval {
+  require UUID;
+
+  sub get_uuid
+  {
+    my ($uuid, $uuid_str);
+    UUID::generate ($uuid);
+    UUID::unparse ($uuid, $uuid_str);
+    $uuid_str;
+  }
+};
+
+if ($@)
+{
+  eval { require Data::UUID; };
+  if ($@) { die "install either UUID or Data::UUID"; }
+
+  sub get_uuid
+  {
+    my $uc= new Data::UUID;
+    my $str= $uc->create_str();
+    $str =~ tr/A-F/a-f/;
+    $str;
+  }
+}
+
 
 my %options_passed= map { $_ => 1 } qw(--note-path); # used by start_tb() function
 
@@ -54,25 +79,6 @@ sub ts_ISO
 # sprintf ("%04d-%02d-%02dT%02d:%02d:%02d.0000000+01:00",
 #          $ts[5]+1900, $ts[4]+1, $ts[3], $ts[2], $ts[1], $ts[0]);
   strftime ('%FT%T.000000%z', @ts);
-}
-
-sub get_uuid
-{
-
-=begin comment
-
-  my ($uuid, $uuid_str);
-  UUID::generate ($uuid);
-  UUID::unparse ($uuid, $uuid_str);
-  $uuid_str;
-
-=end comment
-=cut
-
-  my $uc= new Data::UUID;
-  my $str= $uc->create_str();
-  $str =~ tr/A-F/a-f/;
-  $str;
 }
 
 sub start_tb
