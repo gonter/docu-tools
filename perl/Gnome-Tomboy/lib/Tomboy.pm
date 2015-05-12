@@ -118,5 +118,25 @@ sub start_tb
   $pid;
 }
 
+sub paths
+{
+  my $note_dir;
+
+  if ($ENV{'OSTYPE'} eq 'cygwin')
+  {
+    my $p= `cygpath -O`;
+    chop ($p);
+    my @p= split('/', $p);
+    pop (@p);
+    $note_dir= join ('/', @p, qw(AppData Roaming Tomboy notes));
+  }
+  else
+  {
+    $note_dir= $ENV{'HOME'} . '/.local/share/tomboy';
+  }
+
+  ($note_dir);
+}
+
 1;
 

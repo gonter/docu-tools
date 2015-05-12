@@ -45,6 +45,7 @@ $Data::Dumper::Indent= 1;
 
 use Util::Simple_CSV;
 
+use Tomboy;
 use Tomboy::Note::Simple;
 use Tomboy::Directory;
 use Tomboy::TOC;
@@ -52,19 +53,7 @@ use Tomboy::TOC;
 my $toc_file;
 
 my $note_dir_changed= 0;
-my $note_dir;
-if ($ENV{'OSTYPE'} eq 'cygwin')
-{
-  my $p= `cygpath -O`;
-  chop ($p);
-  my @p= split('/', $p);
-  pop (@p);
-  $note_dir= join ('/', @p, qw(AppData Roaming Tomboy notes));
-}
-else
-{
-  $note_dir= $ENV{'HOME'} . '/.local/share/tomboy';
-}
+my ($note_dir)= Tomboy::paths();
 
 my $start_tb= 0;
 my $start_visual_editor= 0; # AKA $EDITOR
@@ -126,6 +115,13 @@ elsif ($op_code eq 'show') { find_note ('uuid', $_) foreach (@PAR); }
 elsif ($op_code eq 'find') { find_note ('title', @PAR); }
 # elsif ($op_code eq 'cheat') { find_note ('title', $_) foreach (@PAR); }
 elsif ($op_code eq 'uuid') { my $uuid= Tomboy::get_uuid(); print $uuid, "\n"; }
+elsif ($op_code eq 'boy')
+{
+  print "note_dir=[$note_dir]\n";
+  my @x= (qw(tomboy --note-path), $note_dir);
+  print "x=[", join (' ', @x), "]\n";
+  system (@x);
+}
 elsif ($op_code eq 'diff')
 {
   my $f1= shift (@PAR);
