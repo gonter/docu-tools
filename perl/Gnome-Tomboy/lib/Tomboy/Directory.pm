@@ -136,15 +136,17 @@ print __LINE__, " scan_dir: quick=[$quick]\n";
         }
         else
         {
-          print "updated: $fp\n";
+          print "UPD: $fp\n";
           $cnt_updated++;
         }
       }
       else
       {
-        print "added: $fp\n";
+        print "ADD: $fp\n";
         $cnt_added++;
       }
+
+      # NOTE: below we are checking for deleted
     }
 
     my $n= parse Tomboy::Note::Simple ($fp);
@@ -172,11 +174,11 @@ print __LINE__, " scan_dir: quick=[$quick]\n";
 
   closedir (DIR);
 
-# TODO: list dropped files
+# TODO: list dropped/deleted files
   print __LINE__, " fnm: ", Dumper (\%fnm);
   foreach my $fp (keys %fnm)
   {
-    print "dropped: ", $fp, "\n";
+    print "DEL: ", $fp, "\n";
     $cnt_dropped++;
   }
 
