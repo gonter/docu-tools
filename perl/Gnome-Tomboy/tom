@@ -120,7 +120,12 @@ elsif ($op_code eq 'boy')
   print "note_dir=[$note_dir]\n";
   my @x= (qw(tomboy --note-path), $note_dir);
   print "x=[", join (' ', @x), "]\n";
-  system (@x);
+
+  my $pid= fork();
+     if ($pid > 0) { print "forked $pid\n"; exit (0) }
+  elsif ($pid < 0) { die "can't fork [". join (' ', @x). ']'; }
+
+  exec (@x);
 }
 elsif ($op_code eq 'diff')
 {
