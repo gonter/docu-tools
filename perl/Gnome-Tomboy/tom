@@ -28,7 +28,7 @@ Refresh table of contents file.
 
 Find notes matching given pattern.  If option -e is given, open these notes.
 
-=head2 show
+=head2 show <note-id>
 
 =head2 diff
 
@@ -179,6 +179,8 @@ sub find_note
   my %uuid;
   foreach my $pattern (@_)
   {
+    $pattern =~ s#\.note$## if ($where eq 'uuid');
+
     my @res= $toc->find ($pattern, $where);
     foreach my $res (@res) { $uuid{$res->{'uuid'}}= $res; } # TODO: count hits
   }
