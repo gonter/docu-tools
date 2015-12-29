@@ -6,7 +6,7 @@
 
 =head1 DESCRIPTION
 
-utility functions to work with Tomboy
+utility functions to work with Tomboy files
 
 =head1 SYNOPSIS
 
