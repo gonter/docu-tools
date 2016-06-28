@@ -50,6 +50,7 @@ use Tomboy::Note::Simple;
 use Tomboy::Directory;
 use Tomboy::TOC;
 
+my $toc;
 my $toc_file;
 
 my $note_dir_changed= 0;
@@ -59,7 +60,6 @@ my $start_tb= 0;
 my $start_visual_editor= 0; # AKA $EDITOR
 my $dump_note= 0;
 my $verbosity= 'dump';
-my $toc;
 my $op_code;
 my @PAR;
 
@@ -164,6 +164,7 @@ sub setup_toc
   $toc_file= join ('/', $note_dir, 'Tomboy-TOC.csv') unless (defined ($toc_file));
   $toc= new Tomboy::TOC('note_dir' => $note_dir, 'toc_file' => $toc_file);
   # print "toc: ", Dumper ($toc);
+  return ($toc_file, $toc);
 }
 
 sub tom_toc
