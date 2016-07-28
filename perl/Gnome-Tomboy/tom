@@ -50,6 +50,7 @@ use Tomboy::Note::Simple;
 use Tomboy::Directory;
 use Tomboy::TOC;
 
+my $toc;
 my $toc_file;
 
 my $note_dir_changed= 0;
@@ -58,7 +59,7 @@ my ($note_dir)= Tomboy::paths();
 my $start_tb= 0;
 my $start_visual_editor= 0; # AKA $EDITOR
 my $dump_note= 0;
-my $toc;
+my $verbosity= 'dump';
 my $op_code;
 my @PAR;
 
@@ -94,6 +95,7 @@ while (my $arg= shift (@ARGV))
     {
          if ($a eq 'd') { $note_dir= shift (@ARGV); $note_dir_changed= 1; }
       elsif ($a eq 't') { $toc_file= shift (@ARGV); }
+      elsif ($a eq 'T') { $verbosity= 'title'; }
       elsif ($a eq 'e') { $start_tb= 1; }
       elsif ($a eq 'v') { $start_visual_editor= 1; }
       elsif ($a eq 'D') { $dump_note= 1; }
@@ -203,6 +205,7 @@ sub setup_toc
   $toc_file= join ('/', $note_dir, 'Tomboy-TOC.csv') unless (defined ($toc_file));
   $toc= new Tomboy::TOC('note_dir' => $note_dir, 'toc_file' => $toc_file);
   # print "toc: ", Dumper ($toc);
+  return ($toc_file, $toc);
 }
 
 sub tom_toc
@@ -226,8 +229,11 @@ sub find_note
     foreach my $res (@res) { $uuid{$res->{'uuid'}}= $res; } # TODO: count hits
   }
 
+  print '='x72, "\n";
   foreach my $uuid (keys %uuid)
   {
+    my $rec= $uuid{$uuid};
+
     if ($start_tb)
     {
       my @par= ('uuid' => $uuid);
@@ -243,11 +249,18 @@ sub find_note
     }
     elsif ($dump_note)
     {
-      dump_note($uuid{$uuid}->{'fnm'});
+      dump_note($rec->{'fnm'});
     }
     else
     {
-      print Dumper ($uuid{$uuid});
+      if ($verbosity eq 'title')
+      {
+        print $rec->{'title'}, "\n";
+      }
+      else
+      {
+        print Dumper ($rec);
+      }
     }
   }
 }

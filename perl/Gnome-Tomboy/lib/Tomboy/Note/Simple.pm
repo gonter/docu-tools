@@ -522,6 +522,7 @@ sub save
   my $note= shift;
   my $out_dir= shift;
   my $fnm_out= shift;
+  my $no_utf8= shift;
 
   # refresh lines, if they are not up-to-date
   $note->update() unless ($note->{'flg_lines'});
@@ -556,7 +557,14 @@ sub save
     $fnm_out.= $uuid . '.note';
   }
 
-  unless (open (FO, '>:utf8', $fnm_out))
+  my $out_mode= '>:utf8';
+  if ($no_utf8)
+  {
+    print "save with no utf8!\n";
+    $out_mode= '>:encoding(iso-8859-7)';
+  }
+
+  unless (open (FO, $out_mode, $fnm_out))
   {
     print STDERR "can't write to [$fnm_out]\n";
     return undef;

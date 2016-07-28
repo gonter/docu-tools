@@ -1,0 +1,11 @@
+perl/Gnome-Tomboy/lib/Tomboy/Note/Simple.pm
+perl/Gnome-Tomboy/lib/Tomboy/Directory.pm
+perl/Gnome-Tomboy/lib/Tomboy/TOC.pm
+perl/Gnome-Tomboy/lib/Tomboy.pm
+perl/Gnome-Tomboy/s1.pl
+perl/Gnome-Tomboy/s2.pl
+perl/Gnome-Tomboy/s3.pl
+perl/Gnome-Tomboy/x_uuid.pl
+perl/Wiki-Confluence/lib/Wiki/Confluence.pm
+perl/Wiki-Confluence/scripts/cfl1.pl
+perl/Gnome-Tomboy/tom
