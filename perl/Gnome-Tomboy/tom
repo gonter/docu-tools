@@ -62,6 +62,9 @@ my $toc;
 my $op_code;
 my @PAR;
 
+my $notebook;
+my $export_path;
+
 binmode (STDOUT, ':utf8');
 
 while (my $arg= shift (@ARGV))
@@ -76,7 +79,9 @@ while (my $arg= shift (@ARGV))
     my ($op, $val)= split ('=', $1, 2);
     print "op=[$op] val=[$val]\n";
 
-    if ($op eq 'note-path') { $note_dir= $val || shift(@ARGV); $note_dir_changed= 1; }
+       if ($op eq 'note-path') { $note_dir= $val || shift(@ARGV); $note_dir_changed= 1; }
+    elsif ($op eq 'export-path') { $export_path= $val || shift(@ARGV); }
+    elsif ($op eq 'notebook') { $notebook= $val || shift(@ARGV); }
     else
     {
       usage();
@@ -144,6 +149,10 @@ elsif ($op_code eq 'mergecheck')
   my $merge_dir= shift (@PAR);
   merge_check ($merge_label, $merge_dir);
 }
+elsif ($op_code eq 'export')
+{
+  export ($export_path, $notebook);
+}
 else
 {
   usage();
@@ -155,6 +164,38 @@ sub usage
 {
   system ('perldoc', $0);
   exit;
+}
+
+sub export
+{
+  my $path= shift;
+  my $nb= shift;
+
+  my $toc= setup_toc();
+  # print "toc: ", Dumper ($toc);
+
+  usage unless (defined ($path) && defined ($nb));
+
+  $toc->scan_dir();
+
+  my $rows= $toc->{_toc}->{data};
+  foreach my $row (@$rows)
+  {
+    next unless ($row->{notebook} eq $nb);
+
+    print "row: ", Dumper ($row);
+    my $target_fnm= $path.'/'.$row->{uuid}.'.note';
+    # print "target_fnm=[$target_fnm]\n";
+
+    system ('cp', $row->{fnm}, $target_fnm);
+    my @tom= ('tomboy', '--note-path', $path, '--addin:html-export-all-quit', '.'); # , $path);
+    print 'tom: [', join (' ', @tom), "]\n";
+    system (@tom);
+    unlink ($target_fnm);
+
+  # ZZZ
+  }
+
 }
 
 sub setup_toc
