@@ -83,6 +83,14 @@ while (my $arg= shift (@ARGV))
        if ($op eq 'note-path') { $note_dir= $val || shift(@ARGV); $note_dir_changed= 1; }
     elsif ($op eq 'export-path') { $export_path= $val || shift(@ARGV); }
     elsif ($op eq 'notebook') { $notebook= $val || shift(@ARGV); }
+    elsif ($op eq 'today')
+    {
+      my $note= `date '+%G-KW%W'`;
+      chop($note);
+      push (@PAR, $note);
+      $op_code= 'find';
+      $start_tb= 1;
+    }
     else
     {
       usage();
@@ -111,7 +119,7 @@ while (my $arg= shift (@ARGV))
   }
 }
 
-my $op_code= shift (@PAR) unless (defined ($op_code));
+$op_code= shift (@PAR) unless (defined ($op_code));
 print "op_code=[$op_code] par=[", join (';', @PAR), "]\n";
 
    if ($op_code eq 'help') { usage(); }
