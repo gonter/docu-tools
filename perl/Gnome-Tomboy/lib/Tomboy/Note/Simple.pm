@@ -522,7 +522,7 @@ sub save
   my $note= shift;
   my $out_dir= shift;
   my $fnm_out= shift;
-  my $no_utf8= shift;
+  my $no_utf8= shift; # NOTE: this is experimental for the (broken) Android version of Tomboy (Tomdroid or so)
 
   # refresh lines, if they are not up-to-date
   $note->update() unless ($note->{'flg_lines'});
@@ -558,10 +558,12 @@ sub save
   }
 
   my $out_mode= '>:utf8';
+  my $xml_encoding= 'utf-8';
   if ($no_utf8)
   {
     print "save with no utf8!\n";
     $out_mode= '>:encoding(iso-8859-7)';
+    $xml_encoding= 'iso-8859-7'; # TODO: or whatever XML needs here..
   }
 
   unless (open (FO, $out_mode, $fnm_out))
@@ -573,8 +575,8 @@ sub save
   print "writing note [$fnm_out]: [$title]\n"; # TODO: if verbose
 
   print FO chr(65279); # write a BOM, Tomboy seems to like that
-  print FO <<EOX;
-<?xml version="1.0" encoding="utf-8"?>
+  print FO <<"EOX";
+<?xml version="1.0" encoding="$xml_encoding"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
 EOX
   print FO '  <title>'. Util::XML_Parser_Tree::tlt_str($title) ."</title>\n";
