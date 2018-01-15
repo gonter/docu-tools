@@ -256,7 +256,7 @@ sub parse
           }
           elsif ($tag =~ m#system:notebook:(.+)#)
           {
-            $note->{'notebook'}= $1;
+            push (@{$note->{'notebook'}} => $1);
           }
           # TODO: maybe there other tags as well...
         }
@@ -528,7 +528,7 @@ sub save
   $note->update() unless ($note->{'flg_lines'});
 
   my ($title, $uuid, $lines, $ts_updated, $ts_md_updated, $ts_created,
-      $e_updated, $is_template, $nb_name)=
+      $e_updated, $is_template, $nb_list)=
     map { $note->{$_} } qw(title uuid lines last-change-date
          last-metadata-change-date create-date e_updated is_template
          notebook);
@@ -549,7 +549,13 @@ sub save
 # print "tags: ", Dumper ($note->{'tags'});
   my @tags= ();
   push (@tags, 'system:template') if ($is_template);
-  push (@tags, 'system:notebook:'. $nb_name) if ($nb_name);
+  if ($nb_list)
+  {
+    foreach my $nb_name (@$nb_list)
+    {
+      push (@tags, 'system:notebook:'. $nb_name)
+    }
+  }
 
   unless (defined ($fnm_out))
   {

@@ -17,6 +17,7 @@ do stuff with Tomboy files
   --note-path <dir>
   -d <dir> ... full path of Tomboy notes directory
   -e ... edit note (used with find)
+  -v ... same as -e, use Vi as editor
 
 =head1 OP-CODES
 
@@ -106,6 +107,7 @@ while (my $arg= shift (@ARGV))
       elsif ($a eq 'T') { $verbosity= 'title'; }
       elsif ($a eq 'e') { $start_tb= 1; }
       elsif ($a eq 'v') { $start_visual_editor= 1; }
+      # elsif ($a eq 'l') { $show_note= 1; }
       elsif ($a eq 'D') { $dump_note= 1; }
       else
       {

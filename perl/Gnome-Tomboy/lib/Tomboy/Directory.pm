@@ -162,6 +162,7 @@ print __LINE__, " scan_dir: quick=[$quick]\n";
     # print "n: ", main::Dumper ($n);
 
     my %rec= map { $_ => $n->{$_} } @TB_note_attrs;
+    $rec{'notebook'}= join (';', @{$rec{notebook}}) if ($rec{notebook});
     $rec{'uuid'}= $fnm_uuid;
     $rec{'mtime'}= $st[9];
     $rec{'size'}= $st[7];
