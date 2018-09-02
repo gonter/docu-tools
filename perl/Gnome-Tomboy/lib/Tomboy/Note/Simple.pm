@@ -549,12 +549,21 @@ sub save
 # print "tags: ", Dumper ($note->{'tags'});
   my @tags= ();
   push (@tags, 'system:template') if ($is_template);
-  if ($nb_list)
-  {
-    foreach my $nb_name (@$nb_list)
+
+print __LINE__, " nb_list=[$nb_list]\n";
+  if (scalar ($nb_list) eq 'ARRAY')
+  { # hmm... how can this be a list?
+    if ($nb_list)
     {
-      push (@tags, 'system:notebook:'. $nb_name)
+      foreach my $nb_name (@$nb_list)
+      {
+        push (@tags, 'system:notebook:'. $nb_name)
+      }
     }
+  }
+  else
+  {
+    push (@tags, 'system:notebook:'. $nb_list)
   }
 
   unless (defined ($fnm_out))

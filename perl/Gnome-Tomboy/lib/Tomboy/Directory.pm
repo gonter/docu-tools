@@ -176,7 +176,7 @@ print __LINE__, " scan_dir: quick=[$quick]\n";
   closedir (DIR);
 
 # TODO: list dropped/deleted files
-  print __LINE__, " fnm: ", Dumper (\%fnm);
+  # print __LINE__, " fnm: ", Dumper (\%fnm);
   foreach my $fp (keys %fnm)
   {
     print "DEL: ", $fp, "\n";
