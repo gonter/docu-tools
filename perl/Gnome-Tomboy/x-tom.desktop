@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=TomboyStarter
+GenericName=Tomboy Starter
+Comment=Edit Tomboy files
+TryExec=tom
+Exec=tom boy -e %F
+Terminal=false
+Type=Application
+Keywords=Tomboy
+X-Icon=gvim
+Categories=Utility;Office;Notes
+StartupNotify=true
+MimeType=application/x-note;text/x-tomboy

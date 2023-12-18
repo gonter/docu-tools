@@ -43,6 +43,7 @@ use strict;
 
 use Data::Dumper;
 $Data::Dumper::Indent= 1;
+$Data::Dumper::Sort= 1;
 
 use Util::Simple_CSV;
 
@@ -136,6 +137,7 @@ elsif ($op_code eq 'boy')
 {
   print "note_dir=[$note_dir]\n";
   my @x= (qw(tomboy --note-path), $note_dir);
+  push (@x, '--open-note', @PAR) if ($start_tb && @PAR);
   print "x=[", join (' ', @x), "]\n";
 
   my $pid= fork();
