@@ -40,12 +40,20 @@ Find notes matching given pattern.  If option -e is given, open these notes.
 =cut
 
 use strict;
+use utf8;
 
 use Data::Dumper;
 $Data::Dumper::Indent= 1;
-$Data::Dumper::Sort= 1;
+$Data::Dumper::SortKeys= 1;
+
+use FileHandle;
+
+binmode( STDOUT, ':utf8' ); autoflush STDOUT 1;
+binmode( STDERR, ':utf8' ); autoflush STDERR 1;
+binmode( STDIN,  ':utf8' );
 
 use Util::Simple_CSV;
+use Util::hexdump;
 
 use Tomboy;
 use Tomboy::Note::Simple;
@@ -67,8 +75,6 @@ my @PAR;
 
 my $notebook;
 my $export_path;
-
-binmode (STDOUT, ':utf8');
 
 while (my $arg= shift (@ARGV))
 {
@@ -118,12 +124,24 @@ while (my $arg= shift (@ARGV))
   }
   else
   {
+    utf8::decode($arg); # needed
     push (@PAR, $arg);
   }
 }
 
+=cut
+{
+  my $i= 0;
+  foreach my $par (@PAR)
+  {
+    print __LINE__, " par[$i] ", Util::hexdump::hexdump($par);
+    $i++;
+  }
+}
+=cut
+
 $op_code= shift (@PAR) unless (defined ($op_code));
-print "op_code=[$op_code] par=[", join (';', @PAR), "]\n";
+print __LINE__, " op_code=[$op_code] par=[", join (';', @PAR), "]\n";
 
    if ($op_code eq 'help') { usage(); }
 elsif ($op_code eq 'dump') { dump_note ($_) foreach (@PAR); }
