@@ -78,6 +78,8 @@ my $export_path;
 
 while (my $arg= shift (@ARGV))
 {
+  utf8::decode($arg); # needed to process utf8 characters in commandline arguments
+
   if ($arg eq '--')
   {
     push (@PAR, @ARGV);
@@ -124,7 +126,6 @@ while (my $arg= shift (@ARGV))
   }
   else
   {
-    utf8::decode($arg); # needed
     push (@PAR, $arg);
   }
 }
